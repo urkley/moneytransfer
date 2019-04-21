@@ -1,6 +1,5 @@
 package com.revoluttask.services;
 
-import com.google.inject.Inject;
 import com.revoluttask.exceptions.TransferException;
 import com.revoluttask.models.Account;
 
@@ -12,16 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Stream;
 
-public class AccountService {
+public class AccountServiceImpl implements AccountService {
 
-    private final ConcurrentMap<UUID, Account> idToAccount;
-    @Inject
-    private DataLockService<UUID> dataLockService;
+    private static final ConcurrentMap<UUID, Account> idToAccount = new ConcurrentHashMap<>();
+    private static final DataLockService<UUID> dataLockService = new DataLockServiceImpl<>();
 
-    private AccountService() {
-        this.idToAccount = new ConcurrentHashMap<>();
-    }
-
+    @Override
     public Account createNewAccount(BigDecimal balance) {
         UUID accountId = UUID.randomUUID();
         final Account newAccount = new Account(accountId, balance);
@@ -29,14 +24,17 @@ public class AccountService {
         return newAccount;
     }
 
+    @Override
     public Account getAccount(UUID accountId) {
         return idToAccount.get(accountId);
     }
 
+    @Override
     public void deleteAccount(UUID accountId) {
         idToAccount.remove(accountId);
     }
 
+    @Override
     public void transferMoneyFromAccount(BigDecimal transferAmount, UUID fromAccountId, UUID toAccountId) throws TransferException {
         Account fromAccount = idToAccount.get(fromAccountId);
         Account toAccount = idToAccount.get(toAccountId);
@@ -67,6 +65,7 @@ public class AccountService {
         }
     }
 
+    @Override
     public Set<Account> getAllAccounts() {
         return new HashSet<>(idToAccount.values());
     }

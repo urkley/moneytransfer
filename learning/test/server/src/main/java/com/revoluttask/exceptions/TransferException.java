@@ -1,4 +1,4 @@
-package exceptions;
+package com.revoluttask.exceptions;
 
 public class TransferException extends Exception {
 

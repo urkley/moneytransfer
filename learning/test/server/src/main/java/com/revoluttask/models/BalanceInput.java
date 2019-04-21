@@ -1,4 +1,4 @@
-package models;
+package com.revoluttask.models;
 
 import java.math.BigDecimal;
 

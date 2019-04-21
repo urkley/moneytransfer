@@ -1,11 +1,12 @@
-package api;
+package com.revoluttask.api;
 
 import com.google.gson.Gson;
-import exceptions.TransferException;
-import models.Account;
-import models.BalanceInput;
-import models.Transaction;
-import services.AccountService;
+import com.revoluttask.exceptions.TransferException;
+import com.revoluttask.models.Account;
+import com.revoluttask.models.BalanceInput;
+import com.revoluttask.models.Transaction;
+import com.revoluttask.services.AccountService;
+import com.revoluttask.services.AccountServiceImpl;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,20 +18,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.UUID;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static sun.security.timestamp.TSResponse.BAD_REQUEST;
 
 @Path("/api/v1")
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountAPI {
 
-    private final AccountService accountService;
     private static final Gson gson = new Gson();
-
-    public AccountAPI() {
-        this.accountService = AccountService.getInstance();
-    }
+    private static final AccountService accountService = new AccountServiceImpl();
 
     @GET
     @Path("/account")
@@ -44,7 +42,7 @@ public class AccountAPI {
     @GET
     @Path("/account/{id}")
     public Response getAccount(@PathParam("id") String id) {
-        final Account account = accountService.getAccount(id);
+        final Account account = accountService.getAccount(UUID.fromString(id));
         if (account == null) {
             return Response
                     .status(NOT_FOUND)
@@ -69,27 +67,27 @@ public class AccountAPI {
                 .build();
     }
 
-    @DELETE
-    @Path("/account/{id}")
-    public Response deleteAccount(@PathParam("id") String id) {
-        accountService.deleteAccount(id);
-        return Response
-                .noContent()
-                .build();
-    }
-
     @PUT
     @Path("/account/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response transferMoneyToAccount(@PathParam("id") String id, Transaction transaction) {
         try {
-            accountService.transferMoneyFromAccount(transaction.getMoneyAmount(), transaction.getFromAccountId(), id);
+            accountService.transferMoneyFromAccount(transaction.getAmount(), transaction.getFromAccountId(), UUID.fromString(id));
         } catch (TransferException e) {
             return Response
-                    .status(BAD_REQUEST, e.getMessage())
+                    .status(SC_FORBIDDEN, e.getMessage())
                     .build();
         }
+        return Response
+                .noContent()
+                .build();
+    }
+
+    @DELETE
+    @Path("/account/{id}")
+    public Response deleteAccount(@PathParam("id") String id) {
+        accountService.deleteAccount(UUID.fromString(id));
         return Response
                 .noContent()
                 .build();

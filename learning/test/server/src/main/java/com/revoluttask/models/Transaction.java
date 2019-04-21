@@ -1,29 +1,30 @@
-package models;
+package com.revoluttask.models;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class Transaction {
 
-    private String fromAccountId;
+    private UUID fromAccountId;
     private BigDecimal amount;
 
     public Transaction() {
     }
 
-    public Transaction(String fromAccountId, BigDecimal amount) {
+    public Transaction(UUID fromAccountId, BigDecimal amount) {
         this.fromAccountId = fromAccountId;
         this.amount = amount;
     }
 
-    public String getFromAccountId() {
+    public UUID getFromAccountId() {
         return fromAccountId;
     }
 
-    public BigDecimal getMoneyAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setFromAccountId(String fromAccountId) {
+    public void setFromAccountId(UUID fromAccountId) {
         this.fromAccountId = fromAccountId;
     }
 

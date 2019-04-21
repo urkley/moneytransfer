@@ -1,18 +1,19 @@
-package models;
+package com.revoluttask.models;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class Account {
 
-    private String accountId;
+    private UUID accountId;
     private BigDecimal balance;
 
-    public Account(String accountId, BigDecimal balance) {
+    public Account(UUID accountId, BigDecimal balance) {
         this.accountId = accountId;
         this.balance = balance;
     }
 
-    public String getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
